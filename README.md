@@ -6,6 +6,7 @@
 [元组](./元组.md)|
 [字典](./字典.md)|
 [函数](./函数.md)|
+[协程](./协程.md)|yield通常出现在表达式的右边<br>可以产出值也可以不产出<br>把yield视作控制流程的方式
 [类对象](./类对象.md)|当看到一只鸟走路像鸭子<br>游泳也像鸭子<br>称这只鸟为鸭子
 [字符串](./字符串.md)|
 [装饰器](./装饰器.md)|
@@ -21,6 +22,7 @@
 生成器|"凭空"生成元素<br>所有生成器都是迭代器
 with|设置一个临时的上下文,<br>交给上下文管理器对象控制,<br>并且负责清理上下文<br>(保证一段代码运行完毕后执行某项操作, 即使代码由于异常 & return & sys.exit()而中止)
 else|else子句不仅能在if中使用,<br>还能在for(循环完毕, 没有break)、while(while False)、try(没有Exception)中使用
+白鹅类型|只要cls是抽象基类(metaclass=abc.ABCMeta)<br>就可以使用isinstance(obj, cls)
 
 ### Important
 问题|解答
