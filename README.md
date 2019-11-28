@@ -17,3 +17,55 @@
 ---|---
 迭代器|从集合中取出元素<br>按需一次性获取一个数据项
 生成器|"凭空"生成元素<br>所有生成器都是迭代器
+with|设置一个临时的上下文,<br>交给上下文管理器对象控制,<br>并且负责清理上下文<br>(保证一段代码运行完毕后执行某项操作, 即使代码由于异常 & return & sys.exit()而中止)
+else|else子句不仅能在if中使用,<br>还能在for(循环完毕, 没有break)、while(while False)、try(没有Exception)中使用
+
+### Important
+问题|解答
+---|---
+[生成器和迭代器](#生成器和迭代器)|1.接口<br>2.实现方式<br>3.概念
+
+
+##### 生成器和迭代器
+* 接口
+
+```
+迭代器协议: 实现__next__和__iter__
+
+> 生成器实现了这两个function, 
+  ∴所有生成器都是迭代器
+```
+* 实现方式
+
+```
+> 生成器: 1. 含有yield关键字的函数
+         2. 生成器表达式
+得到的生成器对象属于语言内部的GeneratorType类型
+而GeneratorType的实例实现了迭代器接口,
+∴所有生成器都是迭代器
+```
+> 但是, 存在不是生成器的迭代器   
+   Ex: 用C语言编写的拓展(enumerate)
+
+```python
+import types
+from collections.abc import Iterator
+
+e = enumerate("ABC")
+isinstance(e, types.GeneratorType)
+
+>>> False
+
+isinstance(e, Iterator)
+
+>>> True
+```
+
+* 概念
+
+```
+迭代器: 用于 遍历集合, 从中产出元素
+       当调用next(item)时, 迭代器不能修改从数据源中读取的值, 只能原封不动的产出值
+
+生成器: 无需遍历就能生成值
+```
