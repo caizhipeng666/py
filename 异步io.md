@@ -59,15 +59,14 @@ def hello():
 
 ```
 
-> yield from语法可以让我们方便地调用另一个generator
+> yield from语法可以让我们方便地调用另一个generator<br>**asyncio中yield from是把控制权还给事件循环**
 
 ---
-> asyncio.sleep()也是一个coroutine,所以线程不会等待asyncio.sleep(),   
-而是直接中断并执行下一个消息循环   
-当asyncio.sleep()返回时, 线程就可以从yield from拿到返回值(此处是None)   
-然后接着执行下一行语句。
+> asyncio.sleep()也是一个coroutine,所以线程不会等待asyncio.sleep(),<br>而是直接中断并执行下一个消息循环<br>当asyncio.sleep()返回时, 线程就可以从yield from拿到返回值(此处是None)<br>然后接着执行下一行语句。
 
 ---
+> 从 Py3.4起, asyncio包只直接支持TCP和UDP<br>如果想使用HTTP或其他协议, 那么要借助第三方包, Ex: aiohttp
+
 ```python
 import threading
 import asyncio
@@ -81,8 +80,8 @@ def hello():
 
 
 loop = asyncio.get_event_loop()
-tasks = [hello(), hello()]
-loop.run_until_complete(asyncio.wait(tasks))
+wait_tasks = asyncio.wait([hello(), hello()])  # wait也是一个协程, 等传给它的所有协程运行完毕后退出
+loop.run_until_complete(wait_tasks)
 loop.close()
 ```
 
@@ -107,11 +106,15 @@ Future初始状态?
 如何修改Future未完成状态?
     :通过set_result接口将Future设置为完成状态
     (也是这个set_result接口调用了已经注册的那些callback)
-    如果add_callback的时候Future 已经完成, 就让add_callback自己去直接调用了这个回调, 这样效果就统一了
+    如果add_callback的时候Future已经完成, 就让add_callback自己去直接调用了这个回调, 这样效果就统一了
 为什么Future不直接调用callback?
     :Future直接调用callback容易反复触发, 导致栈溢出,
      所以通过延迟调用, 将callable放到事件队列里, 让事件循环帮忙调用
+
+与concurrent.futures.Future的区别?
+    :唯独.result()区别较大, asyncio的.result()不会阻塞去等候结果, 而是排除asyncio.InvalidStateError异常
 ```
+
 ---
 
 ### Coroutine
