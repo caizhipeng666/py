@@ -26,11 +26,15 @@
 with|设置一个临时的上下文,<br>交给上下文管理器对象控制,<br>并且负责清理上下文<br>(保证一段代码运行完毕后执行某项操作, 即使代码由于异常 & return & sys.exit()而中止)
 else|else子句不仅能在if中使用,<br>还能在for(循环完毕, 没有break)、while(while False)、try(没有Exception)中使用
 白鹅类型|只要cls是抽象基类(metaclass=abc.ABCMeta)<br>就可以使用isinstance(obj, cls)
+描述符|对多个属性运用相同存取逻辑的一种方式<br>本质是: 实现了特定协议的类
+一等对象|1. 可以被赋值给一个变量<br>2. 可以嵌入到数据结构中<br>3. 可以作为参数传递给函数<br>4. 可以作为值被函数返回
+导入时 & 运行时|**import 语句可以触发任何“运行时”行为**<br>编译是导入时的活动<br>在导入时, 解释器会从上到下一次性解析完 .py 模块的源码, 然后生成用于执行的字节码。<br>如果句法有错误，就在此时报告。<br>如果本地的 \_\_pycache\_\_ 文件夹中有最新的 .pyc 文件, 解释器会跳过上述步骤, <br>因为已经有运行所需的字节码了
 
 ### Important
 问题|解答
 ---|---
 [生成器和迭代器](#生成器和迭代器)|1.接口<br>2.实现方式<br>3.概念
+[描述符](#描述符)|1.描述符协议<br>2.描述符的优先级
 
 ##### 生成器和迭代器
 * 接口
@@ -74,4 +78,63 @@ isinstance(e, Iterator)
        当调用next(item)时, 迭代器不能修改从数据源中读取的值, 只能原封不动的产出值
 
 生成器: 无需遍历就能生成值
+```
+##### 描述符
+描述符协议|
+---|
+`__get__`|
+`__set__`|
+`__delete__`|
+
+> 描述符和描述符之间也是有区别的:
+
+描述符|区别
+---|---
+同时定义了\_\_get\_\_()和\_\_set\_\_()方法|data descriptor
+只定义了\_\_get\_\_()方法|non-data descriptor
+
+类属性访问|优先级
+---|---
+data descriptor|1
+instance's dict|2
+non-data descriptor|3
+\_\_getattr\_\_()|4
+
+```python
+"""如果把数据存放在描述符对象中"""
+class Test:
+    def __init__(self, data):
+        self.data = data
+
+    def __get__(self, instance, owner):
+        return self.data
+
+    def __set__(self, instance, value):
+        self.data = value
+
+
+class Data:
+    data = Test(1)
+
+
+a = Data()
+b = Data()
+print(a.data)
+print(b.data)
+print(a.data is b.data)
+b.data = 2
+print(a.data)
+>>> 2
+
+"""描述符是类属性，因此每个实例中进行访问的时候都是访问的类属性的引用"""
+"""所以set值的时候要放到instance中"""
+class Test:
+    def __init__(self, data):
+        self.data = data
+
+    def __get__(self, instance, owner):
+        return getattr(instance, self.data)
+
+    def __set__(self, instance, value):
+        instance.__dict__[self.data] = value
 ```
